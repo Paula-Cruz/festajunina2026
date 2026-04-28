@@ -7,16 +7,11 @@ const SHEET_JSON_URL =
 
 const map = L.map("map").setView(CAMPINAS_CENTER, CAMPINAS_ZOOM);
 
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
   maxZoom: 19,
-  attribution: "&copy; OpenStreetMap contributors",
+  subdomains: "abcd",
+  attribution: '&copy; OpenStreetMap contributors &copy; <a href="https://carto.com/">CARTO</a>',
 }).addTo(map);
-
-const statusMessageEl = document.getElementById("statusMessage");
-
-function setStatus(message) {
-  statusMessageEl.textContent = message;
-}
 
 function toNumber(value) {
   if (typeof value === "number") return value;
@@ -72,7 +67,7 @@ async function loadEvents() {
 
     const events = parseValidEvents(rows);
     if (events.length === 0) {
-      setStatus("Nenhuma festa válida encontrada na planilha.");
+      console.warn("Nenhuma festa válida encontrada na planilha.");
       return;
     }
 
@@ -84,9 +79,7 @@ async function loadEvents() {
     });
 
     map.fitBounds(bounds, { padding: [30, 30] });
-    setStatus(`${events.length} festa(s) carregada(s) com sucesso.`);
   } catch (error) {
-    setStatus("Não foi possível carregar os dados da planilha.");
     console.error(error);
   }
 }

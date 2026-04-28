@@ -22,58 +22,41 @@ body {
   margin: 0;
   padding: 0;
   font-family: "Nunito", Arial, Helvetica, sans-serif;
-  background: radial-gradient(circle at top, var(--sunbeam-yellow), var(--white) 48%);
+  background: linear-gradient(180deg, var(--white), #f8f8f8);
   color: var(--black);
 }
 
 .topbar {
-  padding: 1rem 1rem 1.15rem;
-  background: linear-gradient(125deg, var(--ultra-violet), var(--purple-x11), var(--neon-fuchsia));
-  color: var(--white);
-  border-bottom: 4px solid var(--sunbeam-yellow);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+  padding: 1.25rem 1rem 1.35rem;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)),
+    url("https://storage.needpix.com/rsynced_images/gingham-checks-pink.jpg") center/cover
+      no-repeat;
+  color: var(--black);
+  border-bottom: 4px solid var(--hot-fuchsia);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14);
 }
 
 .topbar h1 {
-  margin: 0 0 0.25rem;
-  font-family: "Lilita One", "Arial Black", sans-serif;
-  font-size: 1.9rem;
-  letter-spacing: 0.4px;
-  text-shadow: 2px 2px 0 var(--black);
-}
-
-.topbar p {
   margin: 0;
-  opacity: 0.96;
-  font-weight: 600;
+  font-family: "Lilita One", "Arial Black", sans-serif;
+  font-size: 2rem;
+  letter-spacing: 0.6px;
+  color: var(--black);
+  text-shadow: 1px 1px 0 var(--white);
 }
 
 main {
   padding: 0.9rem;
 }
 
-.status-panel {
-  margin-bottom: 0.85rem;
-  padding: 0.65rem 0.85rem;
-  border-radius: 12px;
-  background: linear-gradient(120deg, var(--tropical-mint), var(--white));
-  border: 2px solid var(--radioactive-grass);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
-}
-
-#statusMessage {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 700;
-}
-
 #map {
   width: 100%;
-  height: calc(100vh - 170px);
+  height: calc(100vh - 130px);
   min-height: 420px;
-  border: 3px solid var(--dark-orange);
+  border: 2px solid var(--tropical-mint);
   border-radius: 14px;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
 }
 
 .popup-title {
@@ -108,16 +91,12 @@ main {
     font-size: 1.5rem;
   }
 
-  .topbar p {
-    font-size: 0.92rem;
-  }
-
   main {
     padding: 0.7rem;
   }
 
   #map {
     min-height: 340px;
-    height: calc(100vh - 180px);
+    height: calc(100vh - 120px);
   }
 }
