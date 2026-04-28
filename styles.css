@@ -1,0 +1,63 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #faf7f2;
+  color: #1f1f1f;
+}
+
+.topbar {
+  padding: 1rem;
+  background: #7a1c1c;
+  color: #ffffff;
+}
+
+.topbar h1 {
+  margin: 0 0 0.25rem;
+  font-size: 1.25rem;
+}
+
+.topbar p {
+  margin: 0;
+  opacity: 0.9;
+}
+
+main {
+  padding: 0.75rem;
+}
+
+.status-panel {
+  margin-bottom: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  background: #fff8e1;
+  border: 1px solid #f0dca2;
+}
+
+#statusMessage {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+#map {
+  width: 100%;
+  height: calc(100vh - 170px);
+  min-height: 420px;
+  border: 1px solid #d8d8d8;
+  border-radius: 10px;
+}
+
+.popup-title {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+}
+
+.popup-list {
+  margin: 0;
+  padding-left: 1rem;
+}
