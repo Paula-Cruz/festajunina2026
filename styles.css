@@ -67,9 +67,10 @@ main {
 .popup-title {
   margin: 0 0 0.25rem;
   font-family: "Quicksand", Arial, Helvetica, sans-serif;
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   color: var(--blazing-flame);
   letter-spacing: 0.2px;
+  font-weight: 700;
 }
 
 .popup-list {
@@ -77,6 +78,7 @@ main {
   padding-left: 1rem;
   font-family: "Quicksand", Arial, Helvetica, sans-serif;
   color: var(--black);
+  font-size: 0.98rem;
 }
 
 .popup-list li {
@@ -93,11 +95,11 @@ main {
 }
 
 .pin-modern {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--hot-fuchsia), var(--blazing-flame));
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.22);
   position: relative;
   transform: translate(-50%, -50%);
 }
@@ -105,13 +107,22 @@ main {
 .pin-modern::after {
   content: "";
   position: absolute;
-  top: 6px;
-  left: 6px;
+  top: 5px;
+  left: 5px;
   width: 8px;
   height: 8px;
   border-radius: 50%;
   background: var(--white);
   opacity: 0.9;
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 12px;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.2);
+}
+
+.leaflet-popup-content {
+  margin: 10px 12px;
 }
 
 @media (max-width: 640px) {
