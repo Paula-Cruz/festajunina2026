@@ -21,29 +21,27 @@ html,
 body {
   margin: 0;
   padding: 0;
-  font-family: "Nunito", Arial, Helvetica, sans-serif;
+  font-family: "Quicksand", Arial, Helvetica, sans-serif;
   background: linear-gradient(180deg, var(--white), #f8f8f8);
   color: var(--black);
 }
 
 .topbar {
-  padding: 1.25rem 1rem 1.35rem;
+  padding: 1.2rem 1rem 1.3rem;
   background:
-    linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)),
-    url("https://storage.needpix.com/rsynced_images/gingham-checks-pink.jpg") center/cover
+    linear-gradient(rgba(255, 255, 255, 0.38), rgba(255, 255, 255, 0.38)),
+    url("https://pt.vecteezy.com/arte-vetorial/2266846-festa-junina-celebracao-fundo") top center/cover
       no-repeat;
   color: var(--black);
-  border-bottom: 4px solid var(--hot-fuchsia);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14);
 }
 
 .topbar h1 {
   margin: 0;
-  font-family: "Lilita One", "Arial Black", sans-serif;
-  font-size: 2rem;
-  letter-spacing: 0.6px;
+  font-family: "Delius", "Comic Sans MS", cursive;
+  font-size: 2.1rem;
+  letter-spacing: 0.3px;
   color: var(--black);
-  text-shadow: 1px 1px 0 var(--white);
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 main {
@@ -54,15 +52,15 @@ main {
   width: 100%;
   height: calc(100vh - 130px);
   min-height: 420px;
-  border: 2px solid var(--tropical-mint);
-  border-radius: 14px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .popup-title {
   margin: 0 0 0.25rem;
-  font-family: "Lilita One", "Arial Black", sans-serif;
-  font-size: 1.15rem;
+  font-family: "Delius", "Comic Sans MS", cursive;
+  font-size: 1.2rem;
   color: var(--blazing-flame);
   letter-spacing: 0.2px;
 }
@@ -88,7 +86,7 @@ main {
 
 @media (max-width: 640px) {
   .topbar h1 {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
   }
 
   main {

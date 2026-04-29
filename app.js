@@ -7,10 +7,10 @@ const SHEET_JSON_URL =
 
 const map = L.map("map").setView(CAMPINAS_CENTER, CAMPINAS_ZOOM);
 
-L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", {
   maxZoom: 19,
-  subdomains: "abcd",
-  attribution: '&copy; OpenStreetMap contributors &copy; <a href="https://carto.com/">CARTO</a>',
+  attribution:
+    "Tiles &copy; Esri &mdash; Source: Esri, HERE, Garmin, Intermap, increment P Corp.",
 }).addTo(map);
 
 function toNumber(value) {
