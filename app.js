@@ -7,11 +7,26 @@ const SHEET_JSON_URL =
 
 const map = L.map("map").setView(CAMPINAS_CENTER, CAMPINAS_ZOOM);
 
-L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", {
+L.tileLayer("https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png", {
   maxZoom: 19,
-  attribution:
-    "Tiles &copy; Esri &mdash; Source: Esri, HERE, Garmin, Intermap, increment P Corp.",
+  subdomains: "abcd",
+  attribution: '&copy; OpenStreetMap contributors &copy; <a href="https://carto.com/">CARTO</a>',
 }).addTo(map);
+
+L.tileLayer("https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png", {
+  maxZoom: 19,
+  subdomains: "abcd",
+  attribution:
+    '&copy; OpenStreetMap contributors &copy; <a href="https://carto.com/">CARTO</a>',
+}).addTo(map);
+
+const modernPinIcon = L.divIcon({
+  className: "",
+  html: '<span class="pin-modern" aria-hidden="true"></span>',
+  iconSize: [20, 20],
+  iconAnchor: [10, 10],
+  popupAnchor: [0, -10],
+});
 
 function toNumber(value) {
   if (typeof value === "number") return value;
@@ -73,7 +88,7 @@ async function loadEvents() {
 
     const bounds = [];
     events.forEach((event) => {
-      const marker = L.marker([event.lat, event.lng]).addTo(map);
+      const marker = L.marker([event.lat, event.lng], { icon: modernPinIcon }).addTo(map);
       marker.bindPopup(createPopupHtml(event));
       bounds.push([event.lat, event.lng]);
     });

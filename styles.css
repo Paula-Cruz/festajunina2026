@@ -2,6 +2,12 @@
   box-sizing: border-box;
 }
 
+@font-face {
+  font-family: "Impacted";
+  src: url("./recursos/earwig factory rg.otf") format("opentype");
+  font-display: swap;
+}
+
 :root {
   --radioactive-grass: #44d800;
   --dark-orange: #ff8c00;
@@ -30,22 +36,23 @@ body {
   padding: 1.2rem 1rem 1.3rem;
   background:
     linear-gradient(rgba(255, 255, 255, 0.38), rgba(255, 255, 255, 0.38)),
-    url("https://pt.vecteezy.com/arte-vetorial/2266846-festa-junina-celebracao-fundo") top center/cover
+    url("./recursos/festajuninapic.png") top center/cover
       no-repeat;
   color: var(--black);
 }
 
 .topbar h1 {
   margin: 0;
-  font-family: "Delius", "Comic Sans MS", cursive;
-  font-size: 2.1rem;
+  font-family: "Impacted", "Impact", "Arial Black", sans-serif;
+  font-size: 2.8rem;
   letter-spacing: 0.3px;
-  color: var(--black);
+  color: var(--hot-fuchsia);
+  text-align: center;
   text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 main {
-  padding: 0.9rem;
+  padding: 0;
 }
 
 #map {
@@ -59,7 +66,7 @@ main {
 
 .popup-title {
   margin: 0 0 0.25rem;
-  font-family: "Delius", "Comic Sans MS", cursive;
+  font-family: "Quicksand", Arial, Helvetica, sans-serif;
   font-size: 1.2rem;
   color: var(--blazing-flame);
   letter-spacing: 0.2px;
@@ -68,6 +75,7 @@ main {
 .popup-list {
   margin: 0;
   padding-left: 1rem;
+  font-family: "Quicksand", Arial, Helvetica, sans-serif;
   color: var(--black);
 }
 
@@ -84,13 +92,31 @@ main {
   color: var(--hot-fuchsia);
 }
 
+.pin-modern {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--hot-fuchsia), var(--blazing-flame));
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  position: relative;
+  transform: translate(-50%, -50%);
+}
+
+.pin-modern::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--white);
+  opacity: 0.9;
+}
+
 @media (max-width: 640px) {
   .topbar h1 {
-    font-size: 1.6rem;
-  }
-
-  main {
-    padding: 0.7rem;
+    font-size: 2.2rem;
   }
 
   #map {
