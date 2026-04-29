@@ -23,9 +23,9 @@ L.tileLayer("https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.
 const modernPinIcon = L.divIcon({
   className: "",
   html: '<span class="pin-modern" aria-hidden="true"></span>',
-  iconSize: [20, 20],
-  iconAnchor: [10, 10],
-  popupAnchor: [0, -10],
+  iconSize: [22, 30],
+  iconAnchor: [11, 30],
+  popupAnchor: [0, -28],
 });
 
 function toNumber(value) {

@@ -96,25 +96,26 @@ main {
 
 .pin-modern {
   display: block;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
+  width: 22px;
+  height: 30px;
+  border-radius: 55% 55% 55% 0;
   background: linear-gradient(135deg, var(--hot-fuchsia), var(--blazing-flame));
-  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.22);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.24);
   position: relative;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -100%) rotate(-45deg);
 }
 
 .pin-modern::after {
   content: "";
   position: absolute;
-  top: 5px;
-  left: 5px;
-  width: 8px;
-  height: 8px;
+  top: 50%;
+  left: 50%;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   background: var(--white);
   opacity: 0.9;
+  transform: translate(-50%, -50%) rotate(45deg);
 }
 
 .leaflet-popup-content-wrapper {
