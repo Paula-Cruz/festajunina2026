@@ -4,7 +4,7 @@
 
 @font-face {
   font-family: "Notedry Base";
-  src: url("./recursos/Notedry Base.otf") format("opentype");
+  src: url("./recursos/Notedry%20Base.otf") format("opentype");
   font-display: swap;
 }
 
@@ -57,7 +57,7 @@ body {
   font-size: clamp(2.1rem, 4.2vw, 2.75rem);
   line-height: 1;
   letter-spacing: 0.3px;
-  color: var(--hot-fuchsia);
+  color: var(--ultra-violet);
   text-align: center;
   text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.9);
 }
