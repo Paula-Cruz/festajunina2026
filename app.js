@@ -4,8 +4,13 @@ const CAMPINAS_ZOOM = 12;
 // Replace this value with your Google Sheets JSON endpoint.
 const SHEET_JSON_URL =
   "https://opensheet.elk.sh/1Dk67z3mrgjC8S8Rm9aiIib5MX03qc89uyiA6CwkTCQI/festas-juninas-cps";
+const CACHE_KEY = "festajunina_events_v1";
+const CACHE_TTL_MS = 5 * 60 * 1000;
 
 const map = L.map("map").setView(CAMPINAS_CENTER, CAMPINAS_ZOOM);
+const loadingEl = document.getElementById("map-loading");
+const markerLayer = L.layerGroup().addTo(map);
+let markersRendered = false;
 
 L.tileLayer("https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png", {
   maxZoom: 19,
@@ -99,17 +104,84 @@ function parseValidEvents(rows) {
     .filter((row) => Number.isFinite(row.lat) && Number.isFinite(row.lng));
 }
 
-async function loadEvents() {
-  try {
-    const response = await fetch(SHEET_JSON_URL);
-    if (!response.ok) {
-      throw new Error(`Falha ao carregar planilha: ${response.status}`);
-    }
+function setLoading(isLoading) {
+  if (!loadingEl) return;
+  loadingEl.classList.toggle("is-visible", isLoading);
+  loadingEl.textContent = isLoading ? "Carregando festas..." : "";
+}
 
-    const rows = await response.json();
-    if (!Array.isArray(rows)) {
-      throw new Error("Formato da planilha inválido.");
-    }
+function readCachedRows() {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+
+    const parsed = JSON.parse(raw);
+    if (!parsed?.savedAt || !Array.isArray(parsed.rows)) return null;
+    if (Date.now() - parsed.savedAt > CACHE_TTL_MS) return null;
+
+    return parsed.rows;
+  } catch {
+    return null;
+  }
+}
+
+function writeCachedRows(rows) {
+  try {
+    localStorage.setItem(
+      CACHE_KEY,
+      JSON.stringify({
+        savedAt: Date.now(),
+        rows,
+      }),
+    );
+  } catch {
+    // Ignore quota or privacy mode errors.
+  }
+}
+
+function renderEvents(events, { fitMap = true } = {}) {
+  markerLayer.clearLayers();
+  if (events.length === 0) return;
+
+  const bounds = [];
+  events.forEach((event) => {
+    const marker = L.marker([event.lat, event.lng], { icon: modernPinIcon }).addTo(markerLayer);
+    marker.bindPopup(createPopupHtml(event));
+    bounds.push([event.lat, event.lng]);
+  });
+
+  if (fitMap || !markersRendered) {
+    map.fitBounds(bounds, { padding: [30, 30] });
+  }
+
+  markersRendered = true;
+}
+
+async function fetchSheetRows() {
+  const response = await fetch(SHEET_JSON_URL);
+  if (!response.ok) {
+    throw new Error(`Falha ao carregar planilha: ${response.status}`);
+  }
+
+  const rows = await response.json();
+  if (!Array.isArray(rows)) {
+    throw new Error("Formato da planilha inválido.");
+  }
+
+  return rows;
+}
+
+async function loadEvents() {
+  const cachedRows = readCachedRows();
+  if (cachedRows) {
+    renderEvents(parseValidEvents(cachedRows), { fitMap: true });
+  } else {
+    setLoading(true);
+  }
+
+  try {
+    const rows = await fetchSheetRows();
+    writeCachedRows(rows);
 
     const events = parseValidEvents(rows);
     if (events.length === 0) {
@@ -126,16 +198,13 @@ async function loadEvents() {
       );
     }
 
-    const bounds = [];
-    events.forEach((event) => {
-      const marker = L.marker([event.lat, event.lng], { icon: modernPinIcon }).addTo(map);
-      marker.bindPopup(createPopupHtml(event));
-      bounds.push([event.lat, event.lng]);
-    });
-
-    map.fitBounds(bounds, { padding: [30, 30] });
+    renderEvents(events, { fitMap: !cachedRows });
   } catch (error) {
-    console.error(error);
+    if (!cachedRows) {
+      console.error(error);
+    }
+  } finally {
+    setLoading(false);
   }
 }
 
