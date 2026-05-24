@@ -35,11 +35,11 @@ body {
 
 .topbar {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
   overflow: hidden;
   height: var(--header-height);
-  padding: 0 1rem 0.4rem;
+  padding: 0 1rem;
   background-color: #f7f2ea;
   background-image:
     linear-gradient(rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.32)),
@@ -54,7 +54,8 @@ body {
 .topbar h1 {
   margin: 0;
   font-family: "Notedry Base", "Impact", "Arial Black", sans-serif;
-  font-size: 2rem;
+  font-size: clamp(2.1rem, 4.2vw, 2.75rem);
+  line-height: 1;
   letter-spacing: 0.3px;
   color: var(--hot-fuchsia);
   text-align: center;
@@ -151,7 +152,7 @@ main {
   }
 
   .topbar h1 {
-    font-size: 1.65rem;
+    font-size: 2rem;
   }
 
   #map {
