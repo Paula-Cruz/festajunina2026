@@ -3,8 +3,8 @@
 }
 
 @font-face {
-  font-family: "Impacted";
-  src: url("./recursos/earwig factory rg.otf") format("opentype");
+  font-family: "Notedry Base";
+  src: url("./recursos/Notedry Base.otf") format("opentype");
   font-display: swap;
 }
 
@@ -21,6 +21,7 @@
   --neon-fuchsia: #ff1dce;
   --white: #ffffff;
   --black: #000000;
+  --header-height: clamp(88px, 9vw, 104px);
 }
 
 html,
@@ -33,18 +34,27 @@ body {
 }
 
 .topbar {
-  padding: 1.2rem 1rem 1.3rem;
-  background:
-    linear-gradient(rgba(255, 255, 255, 0.38), rgba(255, 255, 255, 0.38)),
-    url("./recursos/festajuninapic.png") top center/cover
-      no-repeat;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+  height: var(--header-height);
+  padding: 0 1rem 0.4rem;
+  background-color: #f7f2ea;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.32)),
+    url("./recursos/desenho-festajunina.png");
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-size: 100% auto;
+  border-bottom: 3px solid #6eb5dc;
   color: var(--black);
 }
 
 .topbar h1 {
   margin: 0;
-  font-family: "Impacted", "Impact", "Arial Black", sans-serif;
-  font-size: 2.8rem;
+  font-family: "Notedry Base", "Impact", "Arial Black", sans-serif;
+  font-size: 2rem;
   letter-spacing: 0.3px;
   color: var(--hot-fuchsia);
   text-align: center;
@@ -57,7 +67,7 @@ main {
 
 #map {
   width: 100%;
-  height: calc(100vh - 130px);
+  height: calc(100vh - var(--header-height));
   min-height: 420px;
   border: 0;
   border-radius: 0;
@@ -65,17 +75,20 @@ main {
 }
 
 .popup-title {
-  margin: 0 0 0.25rem;
+  margin: 0 0 0.65rem;
+  padding: 0 1.5rem;
   font-family: "Quicksand", Arial, Helvetica, sans-serif;
   font-size: 1.15rem;
   color: var(--blazing-flame);
   letter-spacing: 0.2px;
   font-weight: 700;
+  text-align: center;
+  line-height: 1.35;
 }
 
 .popup-list {
   margin: 0;
-  padding-left: 1rem;
+  padding-left: 1.15rem;
   font-family: "Quicksand", Arial, Helvetica, sans-serif;
   color: var(--black);
   font-size: 0.98rem;
@@ -94,28 +107,14 @@ main {
   color: var(--hot-fuchsia);
 }
 
-.pin-modern {
-  display: block;
-  width: 22px;
-  height: 30px;
-  border-radius: 55% 55% 55% 0;
-  background: linear-gradient(135deg, var(--hot-fuchsia), var(--blazing-flame));
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.24);
-  position: relative;
-  transform: translate(-50%, -100%) rotate(-45deg);
+.pin-icon-wrap {
+  background: transparent;
+  border: 0;
 }
 
-.pin-modern::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--white);
-  opacity: 0.9;
-  transform: translate(-50%, -50%) rotate(45deg);
+.pin-svg {
+  display: block;
+  overflow: visible;
 }
 
 .leaflet-popup-content-wrapper {
@@ -124,16 +123,38 @@ main {
 }
 
 .leaflet-popup-content {
-  margin: 10px 12px;
+  margin: 16px;
+  min-width: 220px;
+}
+
+.leaflet-container a.leaflet-popup-close-button {
+  top: 12px;
+  right: 12px;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  font:
+    22px/26px "Quicksand",
+    Arial,
+    sans-serif;
+  color: #888;
+  text-align: center;
+}
+
+.leaflet-container a.leaflet-popup-close-button:hover {
+  color: var(--blazing-flame);
 }
 
 @media (max-width: 640px) {
+  :root {
+    --header-height: 82px;
+  }
+
   .topbar h1 {
-    font-size: 2.2rem;
+    font-size: 1.65rem;
   }
 
   #map {
     min-height: 340px;
-    height: calc(100vh - 120px);
   }
 }

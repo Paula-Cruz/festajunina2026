@@ -20,19 +20,50 @@ L.tileLayer("https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.
     '&copy; OpenStreetMap contributors &copy; <a href="https://carto.com/">CARTO</a>',
 }).addTo(map);
 
+const PIN_HTML = `
+  <svg class="pin-svg" width="36" height="46" viewBox="0 0 36 46" aria-hidden="true">
+    <ellipse cx="18" cy="42" rx="11" ry="4" fill="#37b8a8"/>
+    <path d="M18 3c7.2 0 13 5.8 13 13 0 9.5-13 23-13 23S5 25.5 5 16C5 8.8 10.8 3 18 3z" fill="#f14e4e"/>
+    <circle cx="18" cy="16" r="5.5" fill="#fff"/>
+  </svg>`;
+
 const modernPinIcon = L.divIcon({
-  className: "",
-  html: '<span class="pin-modern" aria-hidden="true"></span>',
-  iconSize: [22, 30],
-  iconAnchor: [11, 30],
-  popupAnchor: [0, -28],
+  className: "pin-icon-wrap",
+  html: PIN_HTML,
+  iconSize: [36, 46],
+  iconAnchor: [18, 42],
+  popupAnchor: [0, -40],
 });
 
 function toNumber(value) {
   if (typeof value === "number") return value;
-  if (!value) return Number.NaN;
-  const normalized = String(value).trim().replace(",", ".");
-  return Number(normalized);
+  if (value === null || value === undefined || value === "") return Number.NaN;
+
+  let s = String(value).trim();
+  const dotCount = (s.match(/\./g) || []).length;
+  const commaCount = (s.match(/,/g) || []).length;
+
+  // Planilhas em pt-BR costumam exportar coords com "." como milhar: -22.908.426...
+  if (dotCount > 1) {
+    const firstDot = s.indexOf(".");
+    const intPart = s.slice(0, firstDot);
+    const decPart = s.slice(firstDot + 1).replace(/\./g, "");
+    s = `${intPart}.${decPart}`;
+  } else if (commaCount > 1) {
+    const firstComma = s.indexOf(",");
+    const intPart = s.slice(0, firstComma);
+    const decPart = s.slice(firstComma + 1).replace(/,/g, "");
+    s = `${intPart}.${decPart}`;
+  } else if (commaCount === 1 && dotCount === 0) {
+    s = s.replace(",", ".");
+  } else if (commaCount === 1 && dotCount === 1) {
+    s =
+      s.indexOf(".") < s.indexOf(",")
+        ? s.replace(/\./g, "").replace(",", ".")
+        : s.replace(/,/g, "");
+  }
+
+  return Number(s);
 }
 
 function createPopupHtml(event) {
@@ -82,8 +113,17 @@ async function loadEvents() {
 
     const events = parseValidEvents(rows);
     if (events.length === 0) {
-      console.warn("Nenhuma festa válida encontrada na planilha.");
+      const skipped = rows.length;
+      console.warn(
+        `Nenhuma festa válida encontrada (${skipped} linha(s) ignorada(s)). Confira lat/lng como números, ex.: -22.9084 e -47.0945.`,
+      );
       return;
+    }
+
+    if (events.length < rows.length) {
+      console.warn(
+        `${rows.length - events.length} linha(s) ignorada(s) por lat/lng inválidos.`,
+      );
     }
 
     const bounds = [];

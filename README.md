@@ -31,6 +31,17 @@ MVP de site estático com mapa de Campinas usando Leaflet, com pontos carregados
 - `descricao`
 - `link`
 
+### Formato de `lat` e `lng`
+
+Use **graus decimais** (copiados do Google Maps), por exemplo:
+
+- `lat`: `-22.9084`
+- `lng`: `-47.0945`
+
+O site aceita vírgula ou ponto decimal. Se o Google Sheets aplicar separador de milhar (ex.: `-22.908.426.737`), o site também normaliza isso automaticamente.
+
+Evite texto extra (`-22° S`), células vazias ou trocar as colunas `lat`/`lng`.
+
 ## 3) Conectar planilha no site
 
 Este MVP usa [OpenSheet](https://github.com/benborgers/opensheet) para transformar Google Sheets em JSON.
