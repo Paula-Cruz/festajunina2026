@@ -1,10 +1,11 @@
 const CAMPINAS_CENTER = [-22.90556, -47.06083];
 const CAMPINAS_ZOOM = 12;
 
-// Replace this value with your Google Sheets JSON endpoint.
-const SHEET_JSON_URL =
+const SHEET_CSV_URL =
+  "https://docs.google.com/spreadsheets/d/1Dk67z3mrgjC8S8Rm9aiIib5MX03qc89uyiA6CwkTCQI/export?format=csv&gid=732510702";
+const SHEET_JSON_FALLBACK_URL =
   "https://opensheet.elk.sh/1Dk67z3mrgjC8S8Rm9aiIib5MX03qc89uyiA6CwkTCQI/festas-juninas-cps";
-const CACHE_KEY = "festajunina_events_v1";
+const CACHE_KEY = "festajunina_events_v2";
 const CACHE_TTL_MS = 5 * 60 * 1000;
 
 const map = L.map("map").setView(CAMPINAS_CENTER, CAMPINAS_ZOOM);
@@ -48,7 +49,6 @@ function toNumber(value) {
   const dotCount = (s.match(/\./g) || []).length;
   const commaCount = (s.match(/,/g) || []).length;
 
-  // Planilhas em pt-BR costumam exportar coords com "." como milhar: -22.908.426...
   if (dotCount > 1) {
     const firstDot = s.indexOf(".");
     const intPart = s.slice(0, firstDot);
@@ -69,6 +69,54 @@ function toNumber(value) {
   }
 
   return Number(s);
+}
+
+function parseCsvLine(line) {
+  const values = [];
+  let current = "";
+  let inQuotes = false;
+
+  for (let i = 0; i < line.length; i += 1) {
+    const char = line[i];
+
+    if (char === '"') {
+      if (inQuotes && line[i + 1] === '"') {
+        current += '"';
+        i += 1;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (char === "," && !inQuotes) {
+      values.push(current.trim());
+      current = "";
+    } else {
+      current += char;
+    }
+  }
+
+  values.push(current.trim());
+  return values;
+}
+
+function parseCsvToRows(csvText) {
+  const lines = csvText.split(/\r?\n/).filter((line) => line.trim());
+  if (lines.length < 2) return [];
+
+  const headers = parseCsvLine(lines[0]).map((header) => header.toLowerCase());
+  const rows = [];
+
+  for (let i = 1; i < lines.length; i += 1) {
+    const values = parseCsvLine(lines[i]);
+    if (values.every((value) => !value)) continue;
+
+    const row = {};
+    headers.forEach((header, index) => {
+      row[header] = values[index] || "";
+    });
+    rows.push(row);
+  }
+
+  return rows;
 }
 
 function createPopupHtml(event) {
@@ -107,7 +155,7 @@ function parseValidEvents(rows) {
 function setLoading(isLoading) {
   if (!loadingEl) return;
   loadingEl.classList.toggle("is-visible", isLoading);
-  loadingEl.textContent = isLoading ? "Carregando festas..." : "";
+  loadingEl.setAttribute("aria-hidden", isLoading ? "false" : "true");
 }
 
 function readCachedRows() {
@@ -157,18 +205,42 @@ function renderEvents(events, { fitMap = true } = {}) {
   markersRendered = true;
 }
 
-async function fetchSheetRows() {
-  const response = await fetch(SHEET_JSON_URL);
+async function fetchSheetRowsFromCsv() {
+  const response = await fetch(SHEET_CSV_URL);
   if (!response.ok) {
-    throw new Error(`Falha ao carregar planilha: ${response.status}`);
+    throw new Error(`Falha ao carregar CSV: ${response.status}`);
+  }
+
+  const csvText = await response.text();
+  const rows = parseCsvToRows(csvText);
+  if (rows.length === 0) {
+    throw new Error("CSV da planilha vazio ou inválido.");
+  }
+
+  return rows;
+}
+
+async function fetchSheetRowsFromJson() {
+  const response = await fetch(SHEET_JSON_FALLBACK_URL);
+  if (!response.ok) {
+    throw new Error(`Falha ao carregar JSON: ${response.status}`);
   }
 
   const rows = await response.json();
   if (!Array.isArray(rows)) {
-    throw new Error("Formato da planilha inválido.");
+    throw new Error("Formato JSON da planilha inválido.");
   }
 
   return rows;
+}
+
+async function fetchSheetRows() {
+  try {
+    return await fetchSheetRowsFromCsv();
+  } catch (csvError) {
+    console.warn("CSV indisponível, usando fallback OpenSheet.", csvError);
+    return fetchSheetRowsFromJson();
+  }
 }
 
 async function loadEvents() {

@@ -44,14 +44,14 @@ Evite texto extra (`-22° S`), células vazias ou trocar as colunas `lat`/`lng`.
 
 ## 3) Conectar planilha no site
 
-Este MVP usa [OpenSheet](https://github.com/benborgers/opensheet) para transformar Google Sheets em JSON.
+O site lê a aba [festas-juninas-cps](https://docs.google.com/spreadsheets/d/1Dk67z3mrgjC8S8Rm9aiIib5MX03qc89uyiA6CwkTCQI/edit?gid=732510702) via **CSV publicado do Google Sheets** (mais rápido). Se o CSV falhar, usa OpenSheet como fallback.
 
-1. Publique a planilha para leitura:
-   - Google Sheets > Arquivo > Compartilhar > Publicar na Web.
-2. Copie o ID da planilha (parte entre `/d/` e `/edit` na URL).
-3. Monte a URL no formato:
-   - `https://opensheet.elk.sh/SEU_SHEET_ID/Pagina1`
-4. No arquivo `app.js`, substitua `SHEET_JSON_URL` por essa URL.
+1. Deixe a planilha acessível (compartilhamento "Qualquer pessoa com o link" como leitor).
+2. Confirme o `gid` da aba na URL (atual: `732510702`).
+3. No `app.js`, a URL usada é:
+   - `https://docs.google.com/spreadsheets/d/SEU_SHEET_ID/export?format=csv&gid=SEU_GID`
+4. Fallback JSON (OpenSheet):
+   - `https://opensheet.elk.sh/SEU_SHEET_ID/festas-juninas-cps`
 
 ## 4) Rodar localmente
 
