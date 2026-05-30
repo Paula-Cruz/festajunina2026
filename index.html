@@ -21,11 +21,40 @@
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
       crossorigin=""
     />
-    <link rel="stylesheet" href="./styles.css?v=4" />
+    <link rel="stylesheet" href="./styles.css?v=9" />
   </head>
   <body>
     <header class="topbar">
       <h1>Festas Juninas de Campinas</h1>
+      <div class="header-actions">
+        <button
+          id="filters-btn"
+          type="button"
+          class="filters-btn"
+          aria-label="Abrir filtros de datas"
+          aria-expanded="false"
+          aria-controls="filters-panel"
+        >
+          <svg class="filters-btn__icon" width="34" height="34" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+            <path
+              d="M10 14H38L27 27V37L21 40V27L10 14Z"
+              stroke="currentColor"
+              stroke-width="3"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+        <button
+          id="map-info-btn"
+          type="button"
+          class="map-info-btn"
+          aria-label="Mais informações sobre o mapa"
+          aria-expanded="false"
+          aria-controls="info-modal"
+        >
+          i
+        </button>
+      </div>
     </header>
 
     <main>
@@ -36,11 +65,49 @@
       </div>
     </main>
 
+    <div id="filters-panel" class="filters-panel" aria-hidden="true">
+      <div class="filters-panel__backdrop" data-filters-close></div>
+      <div class="filters-panel__content" role="dialog" aria-modal="true" aria-labelledby="filters-title">
+        <button type="button" class="filters-panel__close" aria-label="Fechar filtros" data-filters-close>
+          &times;
+        </button>
+        <h2 id="filters-title" class="filters-panel__title">Datas</h2>
+        <ul id="filter-date-list" class="filter-date-list"></ul>
+        <button id="filters-clear-btn" type="button" class="filters-clear" hidden>Remover filtros</button>
+      </div>
+    </div>
+
+    <div id="info-modal" class="info-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="info-modal-title">
+      <div class="info-modal__backdrop" data-info-close></div>
+      <div class="info-modal__panel">
+        <button type="button" class="info-modal__close" aria-label="Fechar" data-info-close>&times;</button>
+        <div class="info-modal__content">
+          <p id="info-modal-title" class="info-modal__text">
+            Este mapa é uma iniciativa individual para mapear as festas juninas e ajudar todo mundo a curtir um quentão!
+          </p>
+          <p class="info-modal__text">
+            📬 Se você quiser <strong>incluir uma nova festa, sugerir melhorias</strong> ou
+            <strong>corrigir alguma informação</strong>, é só me mandar um e-mail em:
+            <a href="mailto:paula.cruz2001@gmail.com?subject=Mapa%20Junino">paula.cruz2001@gmail.com</a>.
+          </p>
+          <p class="info-modal__text">
+            💥 Ah, e <strong>atenção</strong>: eu não organizo todos esses eventos e as informações são coletadas de
+            forma pública. Por isso, para não dar viagem perdida, sempre confira as redes oficiais e canais dos
+            organizadores para confirmar datas, horários e atrações.
+          </p>
+          <p class="info-modal__text info-modal__text--closing">🤠 Bora curtir!</p>
+        </div>
+      </div>
+    </div>
+
     <script
       src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
       integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
       crossorigin=""
     ></script>
-    <script src="./app.js?v=3"></script>
+    <script src="./js/dateParser.js?v=1"></script>
+    <script src="./js/filterEngine.js?v=1"></script>
+    <script src="./js/filtersUI.js?v=2"></script>
+    <script src="./app.js?v=10"></script>
   </body>
 </html>

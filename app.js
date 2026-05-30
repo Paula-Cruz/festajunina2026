@@ -12,6 +12,8 @@ const map = L.map("map").setView(CAMPINAS_CENTER, CAMPINAS_ZOOM);
 const loadingEl = document.getElementById("map-loading");
 const markerLayer = L.layerGroup().addTo(map);
 let markersRendered = false;
+let allEvents = [];
+let filtersInitialized = false;
 
 L.tileLayer("https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png", {
   maxZoom: 19,
@@ -26,19 +28,49 @@ L.tileLayer("https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.
     '&copy; OpenStreetMap contributors &copy; <a href="https://carto.com/">CARTO</a>',
 }).addTo(map);
 
+const PIN_WIDTH = 20;
+const PIN_HEIGHT = Math.round((PIN_WIDTH * 95) / 62);
+
 const PIN_HTML = `
-  <svg class="pin-svg" width="36" height="46" viewBox="0 0 36 46" aria-hidden="true">
-    <ellipse cx="18" cy="42" rx="11" ry="4" fill="#37b8a8"/>
-    <path d="M18 3c7.2 0 13 5.8 13 13 0 9.5-13 23-13 23S5 25.5 5 16C5 8.8 10.8 3 18 3z" fill="#f14e4e"/>
-    <circle cx="18" cy="16" r="5.5" fill="#fff"/>
+  <svg class="pin-svg" width="${PIN_WIDTH}" height="${PIN_HEIGHT}" viewBox="0 0 62 95" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M0.445312 47.5H6.44531L24.4453 2L23.4453 1.5L0.445312 47.5Z" fill="#FFB162"/>
+    <path d="M22.4453 47H7.44531L25.4453 1H27.9453L22.4453 47Z" fill="#4897FF"/>
+    <path d="M40.9453 47H23.4453L28.9453 1H30.9453L40.9453 47Z" fill="#FF4D9A"/>
+    <path d="M53.9453 47H41.9453L31.9453 1H33.4453L53.9453 47Z" fill="#FFB162"/>
+    <path d="M60.9453 47H54.9453L34.4453 0.5H34.9453L60.9453 47Z" fill="#FF3337"/>
+    <path d="M6.94531 48H1.44531L25.9453 94.5H27.4453L6.94531 48Z" fill="#F2782C"/>
+    <path d="M29.4453 94.5H27.9453L7.94531 48H22.4453L29.4453 94.5Z" fill="#1C7EFE"/>
+    <path d="M31.9453 94.5H29.9453L23.4453 47.5H40.9453L31.9453 94.5Z" fill="#FF1F80"/>
+    <path d="M33.4453 95H31.9453L41.4453 47.5H54.4453L33.4453 95Z" fill="#F2782C"/>
+    <path d="M34.9453 94.5H33.9453L54.9453 47.5H61.9453L34.9453 94.5Z" fill="#DF1216"/>
+    <path d="M0.445312 47.5L24.4453 0.5" stroke="#FFB162"/>
+    <path d="M24.4453 0.5H34.9453" stroke="#FB169F"/>
+    <path d="M34.9453 0.5L61.4453 47.5" stroke="#FF3337"/>
+    <path d="M0.445312 47.5L26.4453 94.5" stroke="#F9942F"/>
+    <path d="M26.4453 94.5H34.9453" stroke="#FB169F"/>
+    <path d="M34.4453 94.5L61.4453 47.5" stroke="#DF1216"/>
+    <path d="M0.945312 47.5H61.4453" stroke="#FB169F"/>
+    <path d="M6.94531 47.5L27.4453 94.5" stroke="#1C7EFE"/>
+    <path d="M6.94531 47.5L25.4453 1" stroke="#4897FF"/>
+    <path d="M28.4453 0.5L22.9453 47.5" stroke="#FF4D9A"/>
+    <path d="M22.9453 47.5L29.4453 94.5" stroke="#FF1F80"/>
+    <path d="M32.4453 94.5L41.4453 47" stroke="#F2782C"/>
+    <path d="M31.4453 0.5L41.4453 47.5" stroke="#F9942F"/>
+    <path d="M33.4453 0.5L54.9453 47.5" stroke="#FF3337"/>
+    <path d="M54.4453 47.5L32.9453 94.5" stroke="#DF1216"/>
+    <path d="M0.945312 47.5H6.94531" stroke="#F2782C"/>
+    <path d="M7.44531 47.5H22.9453" stroke="#1C7EFE"/>
+    <path d="M22.9453 47.5H41.4453" stroke="#FF1F80"/>
+    <path d="M41.4453 47.5H54.9453" stroke="#F2782C"/>
+    <path d="M54.9453 47.5H61.4453" stroke="#DF1216"/>
   </svg>`;
 
 const modernPinIcon = L.divIcon({
   className: "pin-icon-wrap",
   html: PIN_HTML,
-  iconSize: [36, 46],
-  iconAnchor: [18, 42],
-  popupAnchor: [0, -40],
+  iconSize: [PIN_WIDTH, PIN_HEIGHT],
+  iconAnchor: [PIN_WIDTH / 2, PIN_HEIGHT],
+  popupAnchor: [0, -PIN_HEIGHT + 8],
 });
 
 function toNumber(value) {
@@ -152,6 +184,34 @@ function parseValidEvents(rows) {
     .filter((row) => Number.isFinite(row.lat) && Number.isFinite(row.lng));
 }
 
+function enrichEvents(rows) {
+  return parseValidEvents(rows).map((row) => {
+    const dates = FestaJunina.parseEventDates(row.data);
+
+    if (!dates.length && row.data) {
+      console.warn(`Não foi possível interpretar a data da festa "${row.nome || "sem nome"}": "${row.data}"`);
+    }
+
+    return { ...row, dates };
+  });
+}
+
+function renderFilteredEvents({ fitMap = false } = {}) {
+  const filtered = FestaJunina.applyFilters(allEvents, FestaJunina.getFilterState());
+  renderEvents(filtered, { fitMap });
+}
+
+function onFiltersChange() {
+  renderFilteredEvents({ fitMap: false });
+}
+
+function initializeFilters() {
+  if (filtersInitialized || allEvents.length === 0) return;
+
+  FestaJunina.filtersUI.init(allEvents, onFiltersChange);
+  filtersInitialized = true;
+}
+
 function setLoading(isLoading) {
   if (!loadingEl) return;
   loadingEl.classList.toggle("is-visible", isLoading);
@@ -246,7 +306,9 @@ async function fetchSheetRows() {
 async function loadEvents() {
   const cachedRows = readCachedRows();
   if (cachedRows) {
-    renderEvents(parseValidEvents(cachedRows), { fitMap: true });
+    allEvents = enrichEvents(cachedRows);
+    initializeFilters();
+    renderFilteredEvents({ fitMap: true });
   } else {
     setLoading(true);
   }
@@ -255,8 +317,8 @@ async function loadEvents() {
     const rows = await fetchSheetRows();
     writeCachedRows(rows);
 
-    const events = parseValidEvents(rows);
-    if (events.length === 0) {
+    allEvents = enrichEvents(rows);
+    if (allEvents.length === 0) {
       const skipped = rows.length;
       console.warn(
         `Nenhuma festa válida encontrada (${skipped} linha(s) ignorada(s)). Confira lat/lng como números, ex.: -22.9084 e -47.0945.`,
@@ -264,13 +326,14 @@ async function loadEvents() {
       return;
     }
 
-    if (events.length < rows.length) {
+    if (allEvents.length < rows.length) {
       console.warn(
-        `${rows.length - events.length} linha(s) ignorada(s) por lat/lng inválidos.`,
+        `${rows.length - allEvents.length} linha(s) ignorada(s) por lat/lng inválidos.`,
       );
     }
 
-    renderEvents(events, { fitMap: !cachedRows });
+    initializeFilters();
+    renderFilteredEvents({ fitMap: !cachedRows });
   } catch (error) {
     if (!cachedRows) {
       console.error(error);
@@ -281,3 +344,49 @@ async function loadEvents() {
 }
 
 loadEvents();
+
+function initInfoModal() {
+  const infoBtn = document.getElementById("map-info-btn");
+  const modal = document.getElementById("info-modal");
+  if (!infoBtn || !modal) return;
+
+  const closeTargets = modal.querySelectorAll("[data-info-close]");
+
+  function openModal() {
+    if (FestaJunina.filtersUI?.closePanel) {
+      FestaJunina.filtersUI.closePanel();
+    }
+    modal.classList.add("is-open");
+    modal.setAttribute("aria-hidden", "false");
+    infoBtn.setAttribute("aria-expanded", "true");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeModal() {
+    modal.classList.remove("is-open");
+    modal.setAttribute("aria-hidden", "true");
+    infoBtn.setAttribute("aria-expanded", "false");
+    document.body.style.overflow = "";
+    infoBtn.focus();
+  }
+
+  infoBtn.addEventListener("click", openModal);
+
+  closeTargets.forEach((el) => {
+    el.addEventListener("click", closeModal);
+  });
+
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal.querySelector(".info-modal__backdrop")) {
+      closeModal();
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && modal.classList.contains("is-open")) {
+      closeModal();
+    }
+  });
+}
+
+initInfoModal();
