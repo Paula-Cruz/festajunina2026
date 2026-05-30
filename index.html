@@ -21,7 +21,7 @@
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
       crossorigin=""
     />
-    <link rel="stylesheet" href="./styles.css?v=9" />
+    <link rel="stylesheet" href="./styles.css?v=11" />
   </head>
   <body>
     <header class="topbar">
@@ -31,11 +31,11 @@
           id="filters-btn"
           type="button"
           class="filters-btn"
-          aria-label="Abrir filtros de datas"
+          aria-label="Abrir filtros"
           aria-expanded="false"
           aria-controls="filters-panel"
         >
-          <svg class="filters-btn__icon" width="34" height="34" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+          <svg class="filters-btn__icon" width="40" height="40" viewBox="0 0 48 48" fill="none" aria-hidden="true">
             <path
               d="M10 14H38L27 27V37L21 40V27L10 14Z"
               stroke="currentColor"
@@ -71,8 +71,21 @@
         <button type="button" class="filters-panel__close" aria-label="Fechar filtros" data-filters-close>
           &times;
         </button>
-        <h2 id="filters-title" class="filters-panel__title">Datas</h2>
-        <ul id="filter-date-list" class="filter-date-list"></ul>
+        <h2 id="filters-title" class="filters-panel__title">Filtros</h2>
+        <div class="filters-panel__scroll">
+          <section class="filter-section">
+            <h3 class="filter-section__title">Datas</h3>
+            <ul id="filter-date-list" class="filter-option-list"></ul>
+          </section>
+          <section class="filter-section">
+            <h3 class="filter-section__title">Bairros</h3>
+            <ul id="filter-bairro-list" class="filter-option-list"></ul>
+          </section>
+          <section class="filter-section">
+            <h3 class="filter-section__title">Ingresso</h3>
+            <ul id="filter-ingresso-list" class="filter-option-list"></ul>
+          </section>
+        </div>
         <button id="filters-clear-btn" type="button" class="filters-clear" hidden>Remover filtros</button>
       </div>
     </div>
@@ -105,9 +118,11 @@
       integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
       crossorigin=""
     ></script>
-    <script src="./js/dateParser.js?v=1"></script>
-    <script src="./js/filterEngine.js?v=1"></script>
-    <script src="./js/filtersUI.js?v=2"></script>
-    <script src="./app.js?v=10"></script>
+    <script src="./js/dateParser.js?v=2"></script>
+    <script src="./js/neighborhoodParser.js?v=2"></script>
+    <script src="./js/ingressParser.js?v=3"></script>
+    <script src="./js/filterEngine.js?v=3"></script>
+    <script src="./js/filtersUI.js?v=4"></script>
+    <script src="./app.js?v=13"></script>
   </body>
 </html>

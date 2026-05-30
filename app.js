@@ -5,7 +5,7 @@ const SHEET_CSV_URL =
   "https://docs.google.com/spreadsheets/d/1Dk67z3mrgjC8S8Rm9aiIib5MX03qc89uyiA6CwkTCQI/export?format=csv&gid=732510702";
 const SHEET_JSON_FALLBACK_URL =
   "https://opensheet.elk.sh/1Dk67z3mrgjC8S8Rm9aiIib5MX03qc89uyiA6CwkTCQI/festas-juninas-cps";
-const CACHE_KEY = "festajunina_events_v2";
+const CACHE_KEY = "festajunina_events_v3";
 const CACHE_TTL_MS = 5 * 60 * 1000;
 
 const map = L.map("map").setView(CAMPINAS_CENTER, CAMPINAS_ZOOM);
@@ -187,12 +187,27 @@ function parseValidEvents(rows) {
 function enrichEvents(rows) {
   return parseValidEvents(rows).map((row) => {
     const dates = FestaJunina.parseEventDates(row.data);
+    const bairro = FestaJunina.parseNeighborhood(row.endereco);
+    const ingresso = FestaJunina.parseIngressFromRow(row);
+    const entradaGratuita = FestaJunina.getEntradaGratuitaValue(row);
 
     if (!dates.length && row.data) {
       console.warn(`Não foi possível interpretar a data da festa "${row.nome || "sem nome"}": "${row.data}"`);
     }
 
-    return { ...row, dates };
+    if (row.endereco && !bairro) {
+      console.warn(
+        `Não foi possível extrair bairro da festa "${row.nome || "sem nome"}": "${row.endereco}"`,
+      );
+    }
+
+    if (entradaGratuita && !ingresso) {
+      console.warn(
+        `Valor inválido em "entrada gratuita" da festa "${row.nome || "sem nome"}": "${entradaGratuita}" (use sim ou não)`,
+      );
+    }
+
+    return { ...row, dates, bairro, ingresso };
   });
 }
 

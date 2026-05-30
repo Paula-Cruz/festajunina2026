@@ -244,8 +244,8 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 46px;
+  height: 46px;
   padding: 0;
   border: 0;
   border-radius: 0;
@@ -259,8 +259,8 @@ main {
 
 .filters-btn__icon {
   display: block;
-  width: 34px;
-  height: 34px;
+  width: 40px;
+  height: 40px;
 }
 
 .filters-btn:hover {
@@ -427,15 +427,17 @@ main {
 
 .filters-panel__content {
   position: relative;
-  width: min(200px, calc(100vw - 2rem));
-  max-height: min(420px, calc(100vh - var(--header-height) - 2rem));
-  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  width: min(246px, calc(100vw - 2rem));
+  max-height: min(749px, calc(100vh - var(--header-height) - 2rem));
   margin-top: 0.5rem;
   margin-right: 2.4rem;
-  padding: 2rem 1rem 1rem;
+  padding: 2rem 1.15rem 1rem;
   border-radius: 16px;
   background: var(--white);
-  filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.25));
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
 }
 
 .filters-panel__content::before {
@@ -472,15 +474,39 @@ main {
 }
 
 .filters-panel__title {
-  margin: 0 0 0.85rem;
+  margin: 0 0 0.75rem;
   padding-right: 1.5rem;
   font-family: "Quicksand", Arial, Helvetica, sans-serif;
-  font-size: 1rem;
+  font-size: 1.4rem;
   font-weight: 700;
-  color: var(--black);
+  color: var(--dark-orange);
+  flex-shrink: 0;
 }
 
-.filter-date-list {
+.filters-panel__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 0.15rem;
+}
+
+.filter-section {
+  margin-bottom: 1rem;
+}
+
+.filter-section:last-child {
+  margin-bottom: 0;
+}
+
+.filter-section__title {
+  margin: 0 0 0.55rem;
+  font-family: "Quicksand", Arial, Helvetica, sans-serif;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--ultra-violet);
+}
+
+.filter-option-list {
   margin: 0;
   padding: 0;
   list-style: none;
@@ -489,7 +515,7 @@ main {
   gap: 0.35rem;
 }
 
-.filter-date-list__label {
+.filter-option-list__label {
   display: flex;
   align-items: center;
   gap: 0.55rem;
@@ -502,7 +528,7 @@ main {
   user-select: none;
 }
 
-.filter-date-list__label input[type="checkbox"] {
+.filter-option-list__label input[type="checkbox"] {
   appearance: none;
   width: 18px;
   height: 18px;
@@ -517,7 +543,7 @@ main {
     border-color 0.15s ease;
 }
 
-.filter-date-list__label input[type="checkbox"]:checked {
+.filter-option-list__label input[type="checkbox"]:checked {
   border-color: var(--neon-fuchsia);
   background-color: var(--neon-fuchsia);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 10'%3E%3Cpath d='M1 5.2L4.2 8.4L11 1.4' stroke='white' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
@@ -526,16 +552,16 @@ main {
   background-size: 11px 9px;
 }
 
-.filter-date-list__label input[type="checkbox"]:focus-visible {
+.filter-option-list__label input[type="checkbox"]:focus-visible {
   outline: 2px solid var(--ultra-violet);
   outline-offset: 2px;
 }
 
-.filter-date-list__label--past {
+.filter-option-list__label--past {
   opacity: 0.55;
 }
 
-.filter-date-list__empty {
+.filter-option-list__empty {
   font-family: "Quicksand", Arial, Helvetica, sans-serif;
   font-size: 0.9rem;
   color: #666;
@@ -544,8 +570,8 @@ main {
 .filters-clear {
   display: block;
   width: 100%;
-  margin-top: 0.85rem;
-  padding: 0.45rem 0;
+  margin-top: 0.75rem;
+  padding: 0.45rem 0 0.15rem;
   border: 0;
   background: transparent;
   color: var(--tropical-mint);
@@ -556,6 +582,7 @@ main {
   text-decoration: underline;
   text-underline-offset: 2px;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .filters-clear:hover {
@@ -596,13 +623,13 @@ main {
   }
 
   .filters-btn {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
   }
 
   .filters-btn__icon {
-    width: 30px;
-    height: 30px;
+    width: 34px;
+    height: 34px;
   }
 
   .filters-panel {
@@ -616,9 +643,13 @@ main {
     max-width: none;
     max-height: 70vh;
     margin: 0;
-    padding: 2.25rem 1.25rem 1.5rem;
+    padding: 2.25rem 1.25rem 1.25rem;
     border-radius: 16px 16px 0 0;
-    filter: drop-shadow(0 -4px 12px rgba(0, 0, 0, 0.18));
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.18);
+  }
+
+  .filters-panel__scroll {
+    max-height: calc(70vh - 5.5rem);
   }
 
   .filters-panel__content::before {

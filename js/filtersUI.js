@@ -1,10 +1,11 @@
 (function initFiltersUI(global) {
   const MOBILE_BREAKPOINT = 640;
   let onFiltersChange = null;
-  let dateOptions = [];
   let filtersBtn = null;
   let filtersPanel = null;
   let dateListEl = null;
+  let bairroListEl = null;
+  let ingressoListEl = null;
   let clearBtn = null;
 
   function isMobileViewport() {
@@ -25,55 +26,77 @@
   function updateClearButton() {
     if (!clearBtn || !filtersBtn) return;
 
-    const hasFilters = global.FestaJunina.getFilterState().datas.length > 0;
+    const hasFilters = global.FestaJunina.hasActiveFilters();
     clearBtn.hidden = !hasFilters;
     filtersBtn.classList.toggle("filters-btn--active", hasFilters);
   }
 
-  function syncCheckboxesFromState() {
-    if (!dateListEl) return;
+  function renderCheckboxList(listEl, options, selectedValues, dataAttr, emptyMessage) {
+    if (!listEl) return;
 
-    const selected = new Set(global.FestaJunina.getFilterState().datas);
-    dateListEl.querySelectorAll('input[type="checkbox"][data-date-iso]').forEach((input) => {
-      input.checked = selected.has(input.dataset.dateIso);
-    });
-  }
+    listEl.innerHTML = "";
 
-  function renderDateOptions() {
-    if (!dateListEl) return;
-
-    dateListEl.innerHTML = "";
-
-    if (dateOptions.length === 0) {
+    if (options.length === 0) {
       const emptyItem = document.createElement("li");
-      emptyItem.className = "filter-date-list__empty";
-      emptyItem.textContent = "Nenhuma data disponível.";
-      dateListEl.appendChild(emptyItem);
+      emptyItem.className = "filter-option-list__empty";
+      emptyItem.textContent = emptyMessage;
+      listEl.appendChild(emptyItem);
       return;
     }
 
-    dateOptions.forEach((option) => {
+    const selected = new Set(selectedValues);
+
+    options.forEach((option) => {
+      const value = typeof option === "string" ? option : option.id || option.iso;
+      const labelText = typeof option === "string" ? option : option.label;
+      const isPast = typeof option === "object" && option.isPast;
+
       const item = document.createElement("li");
       const label = document.createElement("label");
-      label.className = "filter-date-list__label";
+      label.className = "filter-option-list__label";
 
       const input = document.createElement("input");
       input.type = "checkbox";
-      input.dataset.dateIso = option.iso;
-      input.value = option.iso;
-      input.checked = global.FestaJunina.getFilterState().datas.includes(option.iso);
+      input.dataset[dataAttr] = value;
+      input.value = value;
+      input.checked = selected.has(value);
 
       const text = document.createElement("span");
-      text.textContent = option.label;
-      if (option.isPast) {
-        text.classList.add("filter-date-list__label--past");
+      text.textContent = labelText;
+      if (isPast) {
+        text.classList.add("filter-option-list__label--past");
       }
 
       label.appendChild(input);
       label.appendChild(text);
       item.appendChild(label);
-      dateListEl.appendChild(item);
+      listEl.appendChild(item);
     });
+  }
+
+  function syncAllCheckboxes() {
+    const state = global.FestaJunina.getFilterState();
+
+    if (dateListEl) {
+      const selectedDates = new Set(state.datas);
+      dateListEl.querySelectorAll('input[type="checkbox"][data-date-iso]').forEach((input) => {
+        input.checked = selectedDates.has(input.dataset.dateIso);
+      });
+    }
+
+    if (bairroListEl) {
+      const selectedBairros = new Set(state.bairros);
+      bairroListEl.querySelectorAll('input[type="checkbox"][data-bairro]').forEach((input) => {
+        input.checked = selectedBairros.has(input.dataset.bairro);
+      });
+    }
+
+    if (ingressoListEl) {
+      const selectedIngresso = new Set(state.ingresso);
+      ingressoListEl.querySelectorAll('input[type="checkbox"][data-ingresso]').forEach((input) => {
+        input.checked = selectedIngresso.has(input.dataset.ingresso);
+      });
+    }
   }
 
   function notifyChange() {
@@ -83,24 +106,27 @@
     }
   }
 
-  function handleDateToggle(event) {
+  function handleListChange(event, dataAttr, setter) {
     const input = event.target;
-    if (input.type !== "checkbox" || !input.dataset.dateIso) return;
+    if (input.type !== "checkbox" || !input.dataset[dataAttr]) return;
 
-    const current = new Set(global.FestaJunina.getFilterState().datas);
-    if (input.checked) {
-      current.add(input.dataset.dateIso);
-    } else {
-      current.delete(input.dataset.dateIso);
-    }
+    const listEl = input.closest("ul");
+    if (!listEl) return;
 
-    global.FestaJunina.setFilterDates([...current]);
+    const selected = [];
+    listEl.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
+      if (checkbox.checked && checkbox.dataset[dataAttr]) {
+        selected.push(checkbox.dataset[dataAttr]);
+      }
+    });
+
+    setter(selected);
     notifyChange();
   }
 
   function handleClearFilters() {
     global.FestaJunina.clearFilters();
-    syncCheckboxesFromState();
+    syncAllCheckboxes();
     notifyChange();
   }
 
@@ -155,7 +181,21 @@
     });
 
     if (dateListEl) {
-      dateListEl.addEventListener("change", handleDateToggle);
+      dateListEl.addEventListener("change", (event) => {
+        handleListChange(event, "dateIso", global.FestaJunina.setFilterDates);
+      });
+    }
+
+    if (bairroListEl) {
+      bairroListEl.addEventListener("change", (event) => {
+        handleListChange(event, "bairro", global.FestaJunina.setFilterBairros);
+      });
+    }
+
+    if (ingressoListEl) {
+      ingressoListEl.addEventListener("change", (event) => {
+        handleListChange(event, "ingresso", global.FestaJunina.setFilterIngresso);
+      });
     }
 
     if (clearBtn) {
@@ -174,10 +214,25 @@
     filtersBtn = document.getElementById("filters-btn");
     filtersPanel = document.getElementById("filters-panel");
     dateListEl = document.getElementById("filter-date-list");
+    bairroListEl = document.getElementById("filter-bairro-list");
+    ingressoListEl = document.getElementById("filter-ingresso-list");
     clearBtn = document.getElementById("filters-clear-btn");
 
-    dateOptions = global.FestaJunina.buildDateFilterOptions(events);
-    renderDateOptions();
+    const state = global.FestaJunina.getFilterState();
+    const dateOptions = global.FestaJunina.buildDateFilterOptions(events);
+    const bairroOptions = global.FestaJunina.buildNeighborhoodFilterOptions(events);
+    const ingressoOptions = global.FestaJunina.getIngressOptions();
+
+    renderCheckboxList(dateListEl, dateOptions, state.datas, "dateIso", "Nenhuma data disponível.");
+    renderCheckboxList(bairroListEl, bairroOptions, state.bairros, "bairro", "Nenhum bairro disponível.");
+    renderCheckboxList(
+      ingressoListEl,
+      ingressoOptions,
+      state.ingresso,
+      "ingresso",
+      "Nenhuma opção disponível.",
+    );
+
     updateClearButton();
     bindEvents();
   }
@@ -187,6 +242,6 @@
     init,
     closePanel,
     updateClearButton,
-    syncCheckboxesFromState,
+    syncAllCheckboxes,
   };
 })(window);

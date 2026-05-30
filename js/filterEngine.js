@@ -1,8 +1,8 @@
 (function initFilterEngine(global) {
   const filterState = {
     datas: [],
-    tipo: [],
-    regiao: [],
+    bairros: [],
+    ingresso: [],
   };
 
   function matchesDateFilter(event, selectedDates) {
@@ -14,27 +14,33 @@
     return eventDates.some((date) => selectedDates.includes(date.iso));
   }
 
-  function matchesTipoFilter(_event, selectedTipos) {
-    if (!selectedTipos.length) return true;
-    // Reservado para próxima sprint.
-    return true;
+  function matchesBairroFilter(event, selectedBairros) {
+    if (!selectedBairros.length) return true;
+
+    const bairro = event.bairro || global.FestaJunina.parseNeighborhood(event.endereco);
+    if (!bairro) return false;
+
+    return selectedBairros.includes(bairro);
   }
 
-  function matchesRegiaoFilter(_event, selectedRegioes) {
-    if (!selectedRegioes.length) return true;
-    // Reservado para próxima sprint.
-    return true;
+  function matchesIngressoFilter(event, selectedIngressos) {
+    if (!selectedIngressos.length) return true;
+
+    const ingresso = event.ingresso ?? global.FestaJunina.parseIngressFromRow(event);
+    if (!ingresso) return false;
+
+    return selectedIngressos.includes(ingresso);
   }
 
   function applyFilters(events, state = filterState) {
     const selectedDates = state.datas || [];
-    const selectedTipos = state.tipo || [];
-    const selectedRegioes = state.regiao || [];
+    const selectedBairros = state.bairros || [];
+    const selectedIngressos = state.ingresso || [];
 
     return events.filter((event) => {
       if (!matchesDateFilter(event, selectedDates)) return false;
-      if (!matchesTipoFilter(event, selectedTipos)) return false;
-      if (!matchesRegiaoFilter(event, selectedRegioes)) return false;
+      if (!matchesBairroFilter(event, selectedBairros)) return false;
+      if (!matchesIngressoFilter(event, selectedIngressos)) return false;
       return true;
     });
   }
@@ -43,17 +49,29 @@
     filterState.datas = [...isoDates];
   }
 
+  function setFilterBairros(bairros) {
+    filterState.bairros = [...bairros];
+  }
+
+  function setFilterIngresso(ingressos) {
+    filterState.ingresso = [...ingressos];
+  }
+
   function clearFilters() {
     filterState.datas = [];
-    filterState.tipo = [];
-    filterState.regiao = [];
+    filterState.bairros = [];
+    filterState.ingresso = [];
+  }
+
+  function hasActiveFilters(state = filterState) {
+    return Boolean(state.datas.length || state.bairros.length || state.ingresso.length);
   }
 
   function getFilterState() {
     return {
       datas: [...filterState.datas],
-      tipo: [...filterState.tipo],
-      regiao: [...filterState.regiao],
+      bairros: [...filterState.bairros],
+      ingresso: [...filterState.ingresso],
     };
   }
 
@@ -61,6 +79,9 @@
   global.FestaJunina.filterState = filterState;
   global.FestaJunina.applyFilters = applyFilters;
   global.FestaJunina.setFilterDates = setFilterDates;
+  global.FestaJunina.setFilterBairros = setFilterBairros;
+  global.FestaJunina.setFilterIngresso = setFilterIngresso;
   global.FestaJunina.clearFilters = clearFilters;
+  global.FestaJunina.hasActiveFilters = hasActiveFilters;
   global.FestaJunina.getFilterState = getFilterState;
 })(window);

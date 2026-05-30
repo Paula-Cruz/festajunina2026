@@ -93,9 +93,10 @@
   }
 
   function parseDayToken(token) {
-    const match = String(token || "")
+    const cleaned = String(token || "")
       .trim()
-      .match(/^(\d{1,2})$/);
+      .replace(/^[,.\s]+|[,.\s]+$/g, "");
+    const match = cleaned.match(/^(\d{1,2})$/);
     return match ? Number(match[1]) : null;
   }
 
@@ -162,7 +163,7 @@
     if (!month) return [];
 
     let daysPart = normalized.slice(0, monthMatch.index).replace(/[\s,]+$/g, "");
-    daysPart = daysPart.replace(/^(\s*e\s+)+/i, "").trim();
+    daysPart = daysPart.replace(/^[\s,]+/, "").replace(/^(\s*e\s+)+/i, "").trim();
     if (!daysPart) return [];
 
     const rangeMatch = daysPart.match(/^(\d{1,2})\s+a\s+(\d{1,2})$/i);
