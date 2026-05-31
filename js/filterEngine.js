@@ -36,8 +36,10 @@
     const selectedDates = state.datas || [];
     const selectedBairros = state.bairros || [];
     const selectedIngressos = state.ingresso || [];
+    const hideFullyPast = hasActiveFilters(state);
 
     return events.filter((event) => {
+      if (hideFullyPast && global.FestaJunina.isEventFullyPast(event)) return false;
       if (!matchesDateFilter(event, selectedDates)) return false;
       if (!matchesBairroFilter(event, selectedBairros)) return false;
       if (!matchesIngressoFilter(event, selectedIngressos)) return false;
@@ -67,6 +69,14 @@
     return Boolean(state.datas.length || state.bairros.length || state.ingresso.length);
   }
 
+  function pruneFilterState(events) {
+    const validDates = new Set(global.FestaJunina.buildDateFilterOptions(events).map((date) => date.iso));
+    const validBairros = new Set(global.FestaJunina.buildNeighborhoodFilterOptions(events));
+
+    filterState.datas = filterState.datas.filter((iso) => validDates.has(iso));
+    filterState.bairros = filterState.bairros.filter((bairro) => validBairros.has(bairro));
+  }
+
   function getFilterState() {
     return {
       datas: [...filterState.datas],
@@ -83,5 +93,6 @@
   global.FestaJunina.setFilterIngresso = setFilterIngresso;
   global.FestaJunina.clearFilters = clearFilters;
   global.FestaJunina.hasActiveFilters = hasActiveFilters;
+  global.FestaJunina.pruneFilterState = pruneFilterState;
   global.FestaJunina.getFilterState = getFilterState;
 })(window);

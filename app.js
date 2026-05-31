@@ -65,6 +65,40 @@ const PIN_HTML = `
     <path d="M54.9453 47.5H61.4453" stroke="#DF1216"/>
   </svg>`;
 
+const PIN_HTML_PAST = `
+  <svg class="pin-svg" width="${PIN_WIDTH}" height="${PIN_HEIGHT}" viewBox="0 0 62 95" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M0.445312 47.5H6.44531L24.4453 2L23.4453 1.5L0.445312 47.5Z" fill="#AEA69D"/>
+    <path d="M22.4453 47H7.44531L25.4453 1H27.9453L22.4453 47Z" fill="#CFD3D9"/>
+    <path d="M40.9453 47H23.4453L28.9453 1H30.9453L40.9453 47Z" fill="#E0D1D8"/>
+    <path d="M53.9453 47H41.9453L31.9453 1H33.4453L53.9453 47Z" fill="#C8BEB4"/>
+    <path d="M60.9453 47H54.9453L34.4453 0.5H34.9453L60.9453 47Z" fill="#D0C0C1"/>
+    <path d="M6.94531 48H1.44531L25.9453 94.5H27.4453L6.94531 48Z" fill="#817A76"/>
+    <path d="M29.4453 94.5H27.9453L7.94531 48H22.4453L29.4453 94.5Z" fill="#9DA8B5"/>
+    <path d="M31.9453 94.5H29.9453L23.4453 47.5H40.9453L31.9453 94.5Z" fill="#CFBCC4"/>
+    <path d="M33.4453 95H31.9453L41.4453 47.5H54.4453L33.4453 95Z" fill="#817A76"/>
+    <path d="M34.9453 94.5H33.9453L54.9453 47.5H61.9453L34.9453 94.5Z" fill="#8F8282"/>
+    <path d="M0.445312 47.5L24.4453 0.5" stroke="#D4C6B9"/>
+    <path d="M24.4453 0.5H34.9453" stroke="#AD9BA6"/>
+    <path d="M34.9453 0.5L61.4453 47.5" stroke="#D0C0C1"/>
+    <path d="M0.445312 47.5L26.4453 94.5" stroke="#97918C"/>
+    <path d="M26.4453 94.5H34.9453" stroke="#AD9BA6"/>
+    <path d="M34.4453 94.5L61.4453 47.5" stroke="#8F8282"/>
+    <path d="M0.945312 47.5H61.4453" stroke="#AD9BA6"/>
+    <path d="M6.94531 47.5L27.4453 94.5" stroke="#9DA8B5"/>
+    <path d="M6.94531 47.5L25.4453 1" stroke="#B5C6DD"/>
+    <path d="M28.4453 0.5L22.9453 47.5" stroke="#CFBCC4"/>
+    <path d="M22.9453 47.5L29.4453 94.5" stroke="#9C8D93"/>
+    <path d="M32.4453 94.5L41.4453 47" stroke="#817A76"/>
+    <path d="M31.4453 0.5L41.4453 47.5" stroke="#97918C"/>
+    <path d="M33.4453 0.5L54.9453 47.5" stroke="#D0C0C1"/>
+    <path d="M54.4453 47.5L32.9453 94.5" stroke="#8F8282"/>
+    <path d="M0.945312 47.5H6.94531" stroke="#817A76"/>
+    <path d="M7.44531 47.5H22.9453" stroke="#9DA8B5"/>
+    <path d="M22.9453 47.5H41.4453" stroke="#E0D1D8"/>
+    <path d="M41.4453 47.5H54.9453" stroke="#817A76"/>
+    <path d="M54.9453 47.5H61.9453" stroke="#8F8282"/>
+  </svg>`;
+
 const modernPinIcon = L.divIcon({
   className: "pin-icon-wrap",
   html: PIN_HTML,
@@ -72,6 +106,18 @@ const modernPinIcon = L.divIcon({
   iconAnchor: [PIN_WIDTH / 2, PIN_HEIGHT],
   popupAnchor: [0, -PIN_HEIGHT + 8],
 });
+
+const pastPinIcon = L.divIcon({
+  className: "pin-icon-wrap pin-icon-wrap--past",
+  html: PIN_HTML_PAST,
+  iconSize: [PIN_WIDTH, PIN_HEIGHT],
+  iconAnchor: [PIN_WIDTH / 2, PIN_HEIGHT],
+  popupAnchor: [0, -PIN_HEIGHT + 8],
+});
+
+function getPinIcon(event) {
+  return event.fullyPast ? pastPinIcon : modernPinIcon;
+}
 
 function toNumber(value) {
   if (typeof value === "number") return value;
@@ -158,9 +204,10 @@ function createPopupHtml(event) {
   const horario = event.horario ? ` - ${event.horario}` : "";
   const descricao = event.descricao || "";
   const link = event.link || "";
+  const titleClass = event.fullyPast ? "popup-title popup-title--past" : "popup-title";
 
   return `
-    <h3 class="popup-title">${nome}</h3>
+    <h3 class="${titleClass}">${nome}</h3>
     <ul class="popup-list">
       <li><strong>Data:</strong> ${data}${horario}</li>
       <li><strong>Endereço:</strong> ${endereco}</li>
@@ -207,7 +254,13 @@ function enrichEvents(rows) {
       );
     }
 
-    return { ...row, dates, bairro, ingresso };
+    return {
+      ...row,
+      dates,
+      bairro,
+      ingresso,
+      fullyPast: FestaJunina.isEventFullyPast({ dates }),
+    };
   });
 }
 
@@ -268,7 +321,7 @@ function renderEvents(events, { fitMap = true } = {}) {
 
   const bounds = [];
   events.forEach((event) => {
-    const marker = L.marker([event.lat, event.lng], { icon: modernPinIcon }).addTo(markerLayer);
+    const marker = L.marker([event.lat, event.lng], { icon: getPinIcon(event) }).addTo(markerLayer);
     marker.bindPopup(createPopupHtml(event));
     bounds.push([event.lat, event.lng]);
   });

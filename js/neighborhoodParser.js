@@ -25,10 +25,12 @@
     return normalizeBairroName(rawBairro);
   }
 
-  function buildNeighborhoodFilterOptions(events) {
+  function buildNeighborhoodFilterOptions(events, refDate = new Date()) {
     const unique = new Set();
 
     events.forEach((event) => {
+      if (global.FestaJunina.isEventFullyPast(event, refDate)) return;
+
       const bairro = event.bairro || parseNeighborhood(event.endereco);
       if (bairro) unique.add(bairro);
     });

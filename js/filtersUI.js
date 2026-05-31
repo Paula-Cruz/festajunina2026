@@ -218,6 +218,8 @@
     ingressoListEl = document.getElementById("filter-ingresso-list");
     clearBtn = document.getElementById("filters-clear-btn");
 
+    global.FestaJunina.pruneFilterState(events);
+
     const state = global.FestaJunina.getFilterState();
     const dateOptions = global.FestaJunina.buildDateFilterOptions(events);
     const bairroOptions = global.FestaJunina.buildNeighborhoodFilterOptions(events);

@@ -97,6 +97,10 @@ main {
   line-height: 1.35;
 }
 
+.popup-title--past {
+  color: #4a4540;
+}
+
 .popup-list {
   margin: 0;
   padding-left: 1.15rem;

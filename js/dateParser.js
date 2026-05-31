@@ -217,16 +217,18 @@
     return dedupeAndSortDates(parsed);
   }
 
-  function buildDateFilterOptions(events) {
+  function buildDateFilterOptions(events, refDate = new Date()) {
     const byIso = new Map();
 
     events.forEach((event) => {
       (event.dates || []).forEach((date) => {
+        if (isDatePast(date.iso, refDate)) return;
+
         if (!byIso.has(date.iso)) {
           byIso.set(date.iso, {
             iso: date.iso,
             label: date.label,
-            isPast: date.isPast,
+            isPast: false,
           });
         }
       });
