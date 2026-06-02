@@ -292,6 +292,46 @@ main {
   outline-offset: 2px;
 }
 
+.leaflet-bottom.leaflet-right {
+  margin-right: 4rem;
+}
+
+.submit-festa-fab {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 1500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--dark-orange);
+  color: var(--white);
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.submit-festa-fab__icon {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
+.submit-festa-fab:hover {
+  transform: scale(1.06);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.24);
+}
+
+.submit-festa-fab:focus-visible {
+  outline: 2px solid var(--ultra-violet);
+  outline-offset: 3px;
+}
+
 .info-modal {
   position: fixed;
   inset: 0;
@@ -658,6 +698,22 @@ main {
 
   .filters-panel__content::before {
     display: none;
+  }
+
+  .leaflet-bottom.leaflet-right {
+    margin-right: 3.25rem;
+  }
+
+  .submit-festa-fab {
+    right: 16px;
+    bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+    width: 44px;
+    height: 44px;
+  }
+
+  .submit-festa-fab__icon {
+    width: 22px;
+    height: 22px;
   }
 
   .info-modal {
