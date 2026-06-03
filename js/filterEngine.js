@@ -59,6 +59,12 @@
     filterState.ingresso = [...ingressos];
   }
 
+  function setFilterState({ datas = [], bairros = [], ingresso = [] } = {}) {
+    filterState.datas = [...datas];
+    filterState.bairros = [...bairros];
+    filterState.ingresso = [...ingresso];
+  }
+
   function clearFilters() {
     filterState.datas = [];
     filterState.bairros = [];
@@ -91,6 +97,7 @@
   global.FestaJunina.setFilterDates = setFilterDates;
   global.FestaJunina.setFilterBairros = setFilterBairros;
   global.FestaJunina.setFilterIngresso = setFilterIngresso;
+  global.FestaJunina.setFilterState = setFilterState;
   global.FestaJunina.clearFilters = clearFilters;
   global.FestaJunina.hasActiveFilters = hasActiveFilters;
   global.FestaJunina.pruneFilterState = pruneFilterState;
